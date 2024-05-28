@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs {
-
-    [Serializable]
-    public class RegisterDTO : BaseUserDTO {
-      
+    public class LoginDTO : BaseUserDTO {
+        
     }
 }
