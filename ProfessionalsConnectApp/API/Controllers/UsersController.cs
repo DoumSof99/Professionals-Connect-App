@@ -6,9 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")] // localhost:5001/api/users
-public class UsersController(DataContext context) : ControllerBase 
+public class UsersController(DataContext context) : BaseApiController // localhost:5001/api/users
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers(){
