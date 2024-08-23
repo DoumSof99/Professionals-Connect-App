@@ -1,0 +1,22 @@
+<div class="cointainer mt-5">
+    <div style="text-align: center;">
+
+        @if (!registerMode) {
+            <h1>Connect with Developers</h1>
+            <p class="lead">Sign in to unlock collaboration opportunities and connect with a global community of developers.
+            </p>
+            <div class="text-center">
+                <button (click)="registerToggle()" class="btn btn-primary btn-lg me-2">Register</button>
+                <button class="btn btn-info btn-lg me-2">Learn more</button>
+            </div>
+        } @else {
+            <div class="conteiner">
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <div>Register form goes here</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
