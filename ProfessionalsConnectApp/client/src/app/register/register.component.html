@@ -10,6 +10,18 @@
             placeholder="Username">
         <label>Username</label>
     </div>
+
+    <div class="mb-3">
+        <label>Users:</label>
+        <select class="form-select">
+            @for (user of usersFormHomeComponent(); track $index) {
+                <option [value]="user.userName">
+                    {{user.userName}}
+                </option>
+            }
+        </select>
+    </div>
+
     <div class="mb-3 form-floating">
         <input 
             type="Password"
