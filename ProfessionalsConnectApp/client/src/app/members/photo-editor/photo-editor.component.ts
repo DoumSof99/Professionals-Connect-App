@@ -5,6 +5,8 @@ import { FileUploader, FileUploadModule } from 'ng2-file-upload';
 import { AccountService } from '../../_services/account.service';
 import { environment } from '../../../environments/environment';
 import { authGuard } from '../../_guards/auth.guard';
+import { Photo } from '../../_models/photo';
+import { MemberService } from '../../_services/member.service';
 
 @Component({
   selector: 'app-photo-editor',
@@ -15,6 +17,7 @@ import { authGuard } from '../../_guards/auth.guard';
 })
 export class PhotoEditorComponent implements OnInit {
   private accountService = inject(AccountService);
+  private memberService = inject(MemberService);
   member = input.required<Member>();
   uploader?: FileUploader;
   hasBaseDropZoneOver = false;
@@ -27,6 +30,25 @@ export class PhotoEditorComponent implements OnInit {
 
   fileOverBase(e: any){
     this.hasBaseDropZoneOver = e;
+  }
+
+  setMainPhoto(photo: Photo){
+    this.memberService.setMainPhoto(photo).subscribe({
+      next: _ => {
+        const user = this.accountService.currentUser();
+        if(user){
+          user.photoUrl = photo.url;
+          this.accountService.setCurrentUser(user);
+        }
+        const updateMemeber = {...this.member()}
+        updateMemeber.photoUrl = photo.url;
+        updateMemeber.photos.forEach(p => {
+          if(p.isMain) p.isMain = false;
+          if(p.id === photo.id) p.isMain = true;
+        });
+        this.memberChange.emit(updateMemeber);
+      }
+    });
   }
 
   initializeUploader(){
