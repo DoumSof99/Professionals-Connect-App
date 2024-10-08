@@ -14,7 +14,7 @@ export class MemberService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
   // members = signal<Member[]>([]);
-  paginatedResults = signal<PaginatedResult<Member[]> | null>(null);
+  paginatedResult = signal<PaginatedResult<Member[]> | null>(null);
 
   getMembers(pageNumber?: number, pageSize?: number){
 
@@ -27,10 +27,11 @@ export class MemberService {
 
     return this.http.get<Member[]>(this.baseUrl + 'users', {observe: 'response', params}).subscribe({
       next: response => {
-        this.paginatedResults.set({
+        this.paginatedResult.set({
           items: response.body as Member[],
           pagination: JSON.parse(response.headers.get('Pagination')!)
         })
+        console.log(this.paginatedResult)
       }
     });
   }
