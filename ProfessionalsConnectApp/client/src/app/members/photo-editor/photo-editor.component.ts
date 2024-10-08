@@ -40,13 +40,13 @@ export class PhotoEditorComponent implements OnInit {
           user.photoUrl = photo.url;
           this.accountService.setCurrentUser(user);
         }
-        const updateMemeber = {...this.member()}
-        updateMemeber.photoUrl = photo.url;
-        updateMemeber.photos.forEach(p => {
+        const updateMember = {...this.member()}
+        updateMember.photoUrl = photo.url;
+        updateMember.photos.forEach(p => {
           if(p.isMain) p.isMain = false;
           if(p.id === photo.id) p.isMain = true;
         });
-        this.memberChange.emit(updateMemeber);
+        this.memberChange.emit(updateMember);
       }
     });
   }
@@ -79,6 +79,17 @@ export class PhotoEditorComponent implements OnInit {
       const photo = JSON.parse(response);
       const updatedMember = {...this.member()};
       updatedMember.photos.push(photo);
+      this.memberChange.emit(updatedMember);
+      const user = this.accountService.currentUser();
+      if(user){
+        user.photoUrl = photo.url;
+        this.accountService.setCurrentUser(user);
+      }
+      updatedMember.photoUrl = photo.url;
+      updatedMember.photos.forEach(p => {
+        if(p.isMain) p.isMain = false;
+        if(p.id === photo.id) p.isMain = true;
+      });
       this.memberChange.emit(updatedMember);
     }
   }
