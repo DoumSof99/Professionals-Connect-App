@@ -29,7 +29,7 @@ public class DataContext(DbContextOptions options) : DbContext(options)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Message>()
-            .HasOne(x => x.Reciepient)
+            .HasOne(x => x.Recipient)
             .WithMany(x => x.MessagesReceived)
             .OnDelete(DeleteBehavior.Restrict);
 
