@@ -4,7 +4,7 @@ export interface Message {
     senderUsername: string
     senderPhotoUrl: string
     recipientId: number
-    reciepientUsername: string
+    recipientUsername: string
     recipientPhotoUrl: string
     content: string
     dateRead?: Date

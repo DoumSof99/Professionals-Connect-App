@@ -11,7 +11,7 @@ import { setPaginatedResponse, setPaginationHeaders } from './paginationHelper';
 export class MessageService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
-  paginatedResults = signal<PaginatedResult<Message[]> | null>(null);
+  paginatedResult = signal<PaginatedResult<Message[]> | null>(null);
 
   getMessages(pageNumber: number, pageSize: number, container: string){
     let params = setPaginationHeaders(pageNumber, pageSize);
@@ -20,7 +20,7 @@ export class MessageService {
 
     return this.http.get<Message[]>(this.baseUrl + 'messages', {observe: 'response', params})
       .subscribe({
-        next: response => setPaginatedResponse(response, this.paginatedResults)
+        next: response => setPaginatedResponse(response, this.paginatedResult)
       });
   }
 

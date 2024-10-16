@@ -48,12 +48,12 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             .Include(x => x.Sender).ThenInclude(x => x.Photos)
             .Include(x => x.Recipient).ThenInclude(x => x.Photos)
             .Where(x => 
-                x.ReciepientUsername == currentUsername && x.SenderUsername == recipientUsername 
-                || x.SenderUsername == currentUsername && x.ReciepientUsername == recipientUsername
+                x.RecipientUsername == currentUsername && x.SenderUsername == recipientUsername 
+                || x.SenderUsername == currentUsername && x.RecipientUsername == recipientUsername
             ).OrderBy(x => x.MessageSent)
             .ToListAsync();
 
-        var unreadMessages = messages.Where(x => x.DateRead == null && x.ReciepientUsername == currentUsername).ToList();
+        var unreadMessages = messages.Where(x => x.DateRead == null && x.RecipientUsername == currentUsername).ToList();
 
         if(unreadMessages.Count != 0){
             unreadMessages.ForEach(x => x.DateRead = DateTime.Now);
