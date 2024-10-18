@@ -21,7 +21,7 @@ export class MemberDetailComponent implements OnInit{
   @ViewChild('memberTabs') memberTabs?: TabsetComponent;
   private messageService = inject(MessageService);
   private memberService = inject(MemberService);
-  private routes = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   member?: Member;
   images: GalleryItem[] = [];
   activeTab?: TabDirective;
@@ -29,6 +29,18 @@ export class MemberDetailComponent implements OnInit{
 
   ngOnInit(): void {
     this.loadMember();
+    this.route.queryParams.subscribe({
+      next: params => {
+        params['tab'] && this.selectTab(params['tab'])
+      }
+    })
+  }
+
+  selectTab(heading: string){
+    if(this.memberTabs){
+      const messageTab = this.memberTabs.tabs.find(x => x.heading === heading);
+      if(messageTab) messageTab.active = true;
+    }
   }
 
   onTabActivated(data: TabDirective){
@@ -41,7 +53,7 @@ export class MemberDetailComponent implements OnInit{
   }
 
   loadMember(){
-    const username = this.routes.snapshot.paramMap.get('username');
+    const username = this.route.snapshot.paramMap.get('username');
     if(!username) return;
     this.memberService.getMember(username).subscribe({
       next: member => {
