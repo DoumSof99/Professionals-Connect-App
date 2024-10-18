@@ -54,13 +54,13 @@ public class MessagesController(IMessageRespository messageRespository, IUserRep
         return Ok(await messageRespository.GetMessageThread(currentUsername, username));
     }
 
-    [HttpPost("{id}")]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteMessage(int id){
         var username = User.GetUsername();
         var message = await messageRespository.GetMessage(id);
 
         if(message == null) return BadRequest("Cannot delete this message");
-        if(message.SenderUsername != username || message.RecipientUsername != username) return Forbid();
+        if(message.SenderUsername != username && message.RecipientUsername != username) return Forbid();
         
         if(message.SenderUsername == username) message.SenderDeleted = true;
         if(message.RecipientUsername == username) message.RecipientDeleted = true;
