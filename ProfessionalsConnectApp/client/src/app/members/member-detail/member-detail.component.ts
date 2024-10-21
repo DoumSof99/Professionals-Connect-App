@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { MemberService } from '../../_services/member.service';
 import { ActivatedRoute } from '@angular/router';
 import { Member } from '../../_models/member';
 import { TabDirective, TabsetComponent, TabsModule } from 'ngx-bootstrap/tabs';
@@ -9,6 +8,7 @@ import { DatePipe } from '@angular/common';
 import { MemberMessagesComponent } from "../member-messages/member-messages.component";
 import { Message } from '../../_models/message';
 import { MessageService } from '../../_services/message.service';
+import { PresenceService } from '../../_services/presence.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -20,8 +20,8 @@ import { MessageService } from '../../_services/message.service';
 export class MemberDetailComponent implements OnInit{
   @ViewChild('memberTabs', {static: true}) memberTabs?: TabsetComponent;
   private messageService = inject(MessageService);
-  private memberService = inject(MemberService);
   private route = inject(ActivatedRoute);
+  presenceService = inject(PresenceService);
   member: Member = {} as Member;
   images: GalleryItem[] = [];
   activeTab?: TabDirective;
