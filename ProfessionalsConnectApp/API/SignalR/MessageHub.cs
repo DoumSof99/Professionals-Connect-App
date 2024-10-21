@@ -1,11 +1,14 @@
 using System;
+using API.DTOs;
+using API.Entities;
 using API.Extensions;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 
 namespace API.SignalR;
 
-public class MessageHub(IMessageRespository messageRespository) : Hub
+public class MessageHub(IMessageRespository messageRespository, IUserRepository userRepository, IMapper mapper) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -23,6 +26,33 @@ public class MessageHub(IMessageRespository messageRespository) : Hub
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         return base.OnDisconnectedAsync(exception);
+    }
+
+    public async Task SendMessage(CreateMessageDto createMessageDto){
+        var username = Context.User?.GetUsername() ?? throw new Exception("Chould not get user");
+        if(username == createMessageDto.RecipientUsername.ToLower()) throw new Exception("You cannot message yourself");
+
+        var sender = await userRepository.GetUserByUsernameAsync(username);
+        var recipient = await userRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
+
+        if(recipient == null ||sender == null || sender.UserName == null || recipient.UserName == null) 
+            throw new Exception("Cannot send message at this time");
+
+        var message = new Message{
+            Sender = sender,
+            Recipient = recipient,
+            SenderUsername = sender.UserName,
+            RecipientUsername = recipient.UserName,
+            Content = createMessageDto.Content
+        };
+
+        messageRespository.AdMessage(message);
+
+        if(await messageRespository.SaveAllAsync()) {
+            var group = GetGroupName(sender.UserName, recipient.UserName);
+            await Clients.Group(group).SendAsync("NewMessage", mapper.Map<MessageDto>(message));
+        }
+
     }
 
     private string GetGroupName(string caller, string? other){
