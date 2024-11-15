@@ -54,7 +54,7 @@ public class AdminController(UserManager<AppUser> userManager, IUnitOfWork unitO
     }
     
     [Authorize(Policy = "ModeratePhotoRole")]
-    [HttpGet("approve-photo/{photoId}")]
+    [HttpPost("approve-photo/{photoId}")]
     public async Task<ActionResult> ApprovePhoto(int photoId){
         var photo = await unitOfWork.PhotoRepository.GetPhotoByID(photoId);
         if(photo == null) return BadRequest("Could not get photo from db");
