@@ -3,6 +3,9 @@ using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data;
 
@@ -13,6 +16,7 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
     public DbSet<Message> Messages { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Connection> Connections { get; set; }
+    public DbSet<Photo> Photos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -54,5 +58,6 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
             .WithMany(x => x.MessageSent)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
     }
 }

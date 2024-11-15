@@ -28,9 +28,12 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
 
     [HttpGet("{username}")]  
     public async Task<ActionResult<MemberDto>> GetUser(string username){
-        var user = await unitOfWork.UserRepository.GetMemberAsync(username);
-        if(user == null) return NotFound();
-        return user;
+        var currentUsername = User.GetUsername();
+        var user = await unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser: currentUsername == username);
+        if(user != null){
+            return Ok(user);   
+        }
+        return BadRequest("Could not find user.");
     }
 
     [HttpPut]
@@ -48,7 +51,7 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
     [HttpPost("add-photo")]
     public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file){
         var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
-        if(user == null) return BadRequest("Could upload user");
+        if(user == null) return BadRequest("Could update user");
 
         var result = await photoService.AddPhotoAsync(file);
         if(result.Error != null) return BadRequest(result.Error.Message);
@@ -58,9 +61,8 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
             PublicId = result.PublicId
         };
 
-        if(user.Photos.Count == 0) photo.IsMain = true;
-
         user.Photos.Add(photo);
+
         if(await unitOfWork.Complete()) 
             return CreatedAtAction(nameof(GetUser), new {username = user.UserName}, mapper.Map<PhotoDto>(photo));
 
@@ -88,7 +90,7 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
         var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
         if(user == null) return BadRequest("Could not find user");
 
-        var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+        var photo = await unitOfWork.PhotoRepository.GetPhotoByID(photoId);
         if(photo == null || photo.IsMain) return BadRequest("Cannot delete this photo");
 
         if(photo.PublicId != null){
