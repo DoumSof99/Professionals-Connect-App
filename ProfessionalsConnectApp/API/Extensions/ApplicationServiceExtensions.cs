@@ -14,7 +14,7 @@ public static class ApplicationServiceExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config) {
         services.AddControllers();
         services.AddDbContext<DataContext>(opti => {
-            opti.UseSqlite(config.GetConnectionString("DefaultConnections"));
+            opti.UseSqlServer(config.GetConnectionString("DefaultConnections"));
         });
         services.AddCors();
         services.AddScoped<ITokenService, TokenService>();
